@@ -221,7 +221,7 @@ async function exportWord(){
  visibleBoxes.forEach((box,i)=>{const key=checks[i];if(key)box.textContent=f[key]?'☒':'☐'});
  // Original activity grid: populate its existing rows and preserve all borders and widths.
  const activity=bodyTables[2], rows=kids(activity,'tr');
- acts.forEach((a,i)=>{const row=rows[i+1];if(!row)return;const cells=kids(row,'tc');[a.from,a.to,a.activity,a.cad,a.report].forEach((v,j)=>{if(cells[j])addTextToCell(cells[j],v)})});
+ acts.forEach((a,i)=>{const row=rows[i+1];if(!row)return;const cells=kids(row,'tc');[a.from,a.to,a.activity,a.cad,a.report].forEach((v,j)=>{if(cells[j]){addTextToCell(cells[j],v);if(j===2){const p=kids(cells[j],'p')[0];if(p){let pPr=kids(p,'pPr')[0];if(!pPr){pPr=document.createElementNS(W,'w:pPr');p.insertBefore(pPr,p.firstChild)}let jc=kids(pPr,'jc')[0];if(!jc){jc=document.createElementNS(W,'w:jc');pPr.appendChild(jc)}jc.setAttributeNS(W,'w:val','left')}}}})});
  save('word/document.xml',doc);
  const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Daily_Activity_Report_${f.date||'shift'}.docx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
