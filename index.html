@@ -33,6 +33,10 @@ button{border:0;border-radius:8px;padding:12px 14px;font-size:15px;font-weight:7
 .quick-editor-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 @media(min-width:600px){.quick-template-row{grid-template-columns:minmax(140px,.8fr) minmax(240px,2fr) auto;align-items:start}.quick-template-row .remove-template{justify-self:stretch}}
 
+
+.property-check-control{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.property-building-select{max-width:220px;padding:7px 9px;border:1px solid #9aabba;border-radius:7px;background:#fff;color:#00274c;font-size:12px}
+
 </style></head>
 <body>
 <header><h1>Officer’s Daily Activity Log — V10</h1><p>Phone-friendly shift notes • Save during shift • Generate a Word document at end of shift</p></header>
@@ -131,8 +135,42 @@ function getQuickTemplates(){
  }catch(e){}
  return DEFAULT_QUICK_TEMPLATES.map(x=>({...x}));
 }
+const PROPERTY_CHECK_BUILDINGS = [
+ "Alice Lloyd","Baits 1","Baits 2","Betsy Barbour","Bursley","Couzens","East Quad",
+ "Fletcher","Henderson","Helen Newberry","Lawyers Club","Martha Cook","MoJo","Markley",
+ "Munger","North Quad","NW1","NW2","NW4","NW5","Oxford","South Quad","Stockwell",
+ "Connector","West Quad","Wolverine 1","Wolverine 2","Wolverine 3","Wolverine 4","Wolverine 5"
+];
 function renderQuickButtons(){
- return getQuickTemplates().map(t=>`<button type="button" class="quick-btn" data-template="${esc(t.text)}" onclick="insertQuickText(this)">${esc(t.label)}</button>`).join("");
+ return getQuickTemplates().map(t=>{
+  if(t.label.trim().toLowerCase()==="oxford housing check" || t.label.trim().toLowerCase()==="property check"){
+   return `<span class="property-check-control"><button type="button" class="quick-btn" onclick="togglePropertyBuilding(this)">Property Check ▾</button><select class="property-building-select" aria-label="Choose building for property check" hidden onchange="insertPropertyCheck(this)"><option value="">Choose building…</option>${PROPERTY_CHECK_BUILDINGS.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("")}</select></span>`;
+  }
+  return `<button type="button" class="quick-btn" data-template="${esc(t.text)}" onclick="insertQuickText(this)">${esc(t.label)}</button>`;
+ }).join("");
+}
+function togglePropertyBuilding(button){
+ const control=button.closest(".property-check-control");
+ const select=control.querySelector(".property-building-select");
+ select.hidden=!select.hidden;
+ if(!select.hidden)select.focus();
+}
+function insertPropertyCheck(select){
+ const building=select.value;
+ if(!building)return;
+ const field=select.closest(".activity").querySelector(".anote");
+ const text=`Completed a property check of ${building}. [ADD FINDINGS / ACTION TAKEN].`;
+ const start=field.selectionStart ?? field.value.length;
+ const end=field.selectionEnd ?? field.value.length;
+ const before=field.value.slice(0,start), after=field.value.slice(end);
+ const prefix=before && !before.endsWith("\\n") ? "\\n" : "";
+ const insert=prefix+text;
+ field.value=before+insert+after;
+ const pos=before.length+insert.length;
+ field.focus();
+ field.setSelectionRange(pos,pos);
+ select.value="";
+ select.hidden=true;
 }
 function refreshQuickButtons(){
  document.querySelectorAll(".quick-insert").forEach(el=>{el.innerHTML=renderQuickButtons();});
