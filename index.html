@@ -10,7 +10,7 @@ main{max-width:900px;margin:auto;padding:14px}section{background:white;border:1p
 h2{font-size:17px;margin:0 0 12px;color:#00274c}h3{font-size:14px;margin:0 0 8px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
 input,select,textarea{font:16px Arial;width:100%;border:1px solid #aab6c5;border-radius:7px;padding:10px;background:#fff;color:#18212b}
-textarea{min-height:76px;resize:vertical;overflow-y:hidden}.required-entry{min-height:44px;resize:vertical;white-space:pre-wrap}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+textarea{min-height:76px;resize:vertical;overflow-y:auto}.anote{min-height:9em;resize:vertical;overflow-y:auto}.required-entry{min-height:44px;resize:vertical;white-space:pre-wrap}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .check{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400;margin:0}.check input{width:20px;height:20px}
 .activity{border:1px solid #d7dee7;border-radius:9px;padding:11px;margin-bottom:10px;background:#fbfcfe}
 .activitytop{display:grid;grid-template-columns:1fr 1fr;gap:8px}.activity .full{margin-top:8px}
@@ -89,7 +89,7 @@ function setToday(){let d=new Date();document.getElementById('date').value=`${d.
 function addActivity(from='',to='',activity='',cad='',report=''){
  const wrap=document.createElement('div');wrap.className='activity';
  wrap.innerHTML=`<div class="activitytop"><div><label>From (24-hour)</label><input class="afrom" placeholder="1700" value="${esc(from)}"></div><div><label>To (24-hour)</label><input class="ato" placeholder="1725" value="${esc(to)}"></div></div>
- <div class="full"><label>Activity / Notes</label><textarea class="anote" placeholder="Tap here and dictate or type activity details">${esc(activity)}</textarea></div>
+ <div class="full"><label>Activity / Notes</label><textarea class="anote" rows="6" placeholder="Tap here and dictate or type activity details">${esc(activity)}</textarea></div>
  <div class="activitytop full"><div><label>CAD #</label><input class="acad" value="${esc(cad)}"></div><div><label>Report #</label><input class="areport" value="${esc(report)}"></div></div>
  <div style="text-align:right;margin-top:8px"><button type="button" class="danger" onclick="this.closest('.activity').remove()">Remove row</button></div>`;
  document.getElementById('activities').appendChild(wrap)
